@@ -35,4 +35,6 @@ This will result in an underflow in https://elixir.bootlin.com/linux/v5.10.12/so
 Similarly, the driver can specify a very high value for `sg_elems` which will cause an out-of-bounds access in https://elixir.bootlin.com/linux/v5.10.12/source/lib/scatterlist.c#L126.
 
 
-
+## 6. Reachable Assertion
+A BUG statement can be triggered by the virtual device through providing a value for `sg_elems` that is above `req->nr_phys_segments + 2`
+https://elixir.bootlin.com/linux/v4.7/source/drivers/block/virtio_blk.c#L172

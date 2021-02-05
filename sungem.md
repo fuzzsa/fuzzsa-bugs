@@ -13,3 +13,8 @@ The number of loop iterations is determined in https://elixir.bootlin.com/linux/
 Fix:
 Keep track of what the end of the ring queue can be and validate the results provided by the device.
 
+## 2. Unbounded Allocation
+*DMA* memory is allocated but not freed
+https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/sun/sunhme.c#L3124
+but not freed if initialization fails at
+https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/sun/sunhme.c#L3166

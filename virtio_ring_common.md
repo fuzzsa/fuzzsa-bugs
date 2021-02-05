@@ -29,4 +29,10 @@ When all vqs are deleted later in https://github.com/torvalds/linux/blob/eccc876
 
 Fix: remove the virtqueue from the list if virtqueue initialization fails.
 
+## 5. Reachable Assertion
+A `BUG` statement is triggered if the device provides `vq->vq.num_free != vq->split.vring.num`
+https://elixir.bootlin.com/linux/latest/source/drivers/virtio/virtio_ring.c#L839
+https://elixir.bootlin.com/linux/latest/source/drivers/virtio/virtio_ring.c#L1547
 
+## 6. Reachable Assertion
+https://elixir.bootlin.com/linux/latest/source/include/linux/virtio_config.h#L232

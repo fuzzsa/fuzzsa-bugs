@@ -42,3 +42,11 @@ Note that `gve_reset_recovery` on patch b) sets the parameter `skip_describe_dev
 The GVE driver shares and dereferences many pointers contained in the shared structure `struct gve_notify_block` in https://elixir.bootlin.com/linux/v5.10.10/source/drivers/net/ethernet/google/gve/gve.h#L159.
 The `ntfy_blocks` array is allocated in https://github.com/torvalds/linux/blob/d76913908102044f14381df865bb74df17a538cb/drivers/net/ethernet/google/gve/gve_main.c#L249.
 One of many places where a pointer, possibly overwritten by the device, is used is https://github.com/torvalds/linux/blob/d76913908102044f14381df865bb74df17a538cb/drivers/net/ethernet/google/gve/gve_main.c#L397
+
+
+## 5. Unbounded Allocation
+`num_ntfy[_blks]` is under device control
+https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/google/gve/gve_main.c#L1096
+https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/google/gve/gve_main.c#L1114
+and used to allocate *DMA* memory
+https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/google/gve/gve_main.c#L248

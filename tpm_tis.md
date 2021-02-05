@@ -17,3 +17,6 @@ The buffer is filled in https://elixir.bootlin.com/linux/v5.10.10/source/drivers
 Due to a race condition the the device can trigger a use after free, by triggerin the removal of the driver while the character device can still be accessed.
 The race condition happens because https://elixir.bootlin.com/linux/latest/source/drivers/char/tpm/tpm-chip.c#L274 frees the memory allocated for that chip, which containts the character device structure. 
 A call to cdev_remove is missing.
+https://elixir.bootlin.com/linux/latest/source/drivers/char/tpm/tpm-chip.c#L434 allocates two character devices.
+If the second call fails the first cdev will not be removed:
+https://elixir.bootlin.com/linux/latest/source/drivers/char/tpm/tpm-chip.c#L602

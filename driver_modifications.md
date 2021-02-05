@@ -4,6 +4,8 @@ The modifications fall into two categories:
 * Patches to fix bugs that were identified during research
 * Fuzzing optimizations (such as removing checks on checksum comparisons, that are difficult to  solve for a fuzzer)
 
+Fuzzing optimizations are controlled via `apply_hacks`. Patches are controlled via `apply_patch` to avoid reachable assertion, unbounded allocations and deadlocks and `apply_patch2` to avoid the remaining issues.
+
 ## virtio_blk
 ### Patches
 1. [low severity] Avoid reachable assertion:
@@ -343,8 +345,8 @@ The modifications fall into two categories:
  	/* When host has read buffer, this completes via balloon_ack */
 -	wait_event(vb->acked, virtqueue_get_buf(vq, &len));
 -
-+	// Patch(feli): the virtqueues might be broken which leads to a deadlock here
-+	// Note(feli): alternatively one could also wrap the kernel waitqueue interface
++	// Patch(xxx): the virtqueues might be broken which leads to a deadlock here
++	// Note(xxx): alternatively one could also wrap the kernel waitqueue interface
 +	// in order to forcefully cancel these, but I guess such deadlocks are technically
 +	// bugs to patching them is probably the better way
 +   if(lkl_ops->fuzz_ops->apply_patch()) {
@@ -377,7 +379,7 @@ The modifications fall into two categories:
  	virtio_cread_le(vb->vdev, struct virtio_balloon_config, num_pages,
  			&num_pages);
 
-+	// Patch(feli): this can get out of hand if the fuzzer
++	// Patch(xxx): this can get out of hand if the fuzzer
 +	// asks for insane amounts of mem, lets keep the diff
 +	// reasonalbe (not a bug though)
  	target = num_pages;
