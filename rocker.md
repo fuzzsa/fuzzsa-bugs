@@ -47,3 +47,11 @@ would copy the memory from the SWIOTLB SLAB to the original buffer.
 [1]: https://elixir.bootlin.com/linux/v5.10/source/drivers/net/ethernet/rocker/rocker_main.c#L203
 [2]: https://elixir.bootlin.com/linux/v5.10/source/drivers/net/ethernet/rocker/rocker_main.c#L172
 [3]: https://elixir.bootlin.com/linux/v5.10/source/include/linux/dma-mapping.h#L117
+
+## 4. Out-of-bounds access
+
+Buffer size is read from device controlled memory via `desc_info->desc->tlv_size` in [4] and used to limit buffer access in [5].
+
+
+[4] https://github.com/torvalds/linux/blob/1e43c377a79f9189fea8f2711b399d4e8b4e609b/drivers/net/ethernet/rocker/rocker_tlv.h#L124
+[5] https://github.com/torvalds/linux/blob/1e43c377a79f9189fea8f2711b399d4e8b4e609b/drivers/net/ethernet/rocker/rocker_tlv.c#L15
