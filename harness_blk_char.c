@@ -10,15 +10,13 @@ int mod_init(void) {
 }
 
 static int make_devnodes(int *fds) {
-   int res;
    char buf[128];
    struct lkl_fuzz_devnode *dn;
-   int n_fd = 0;
    int n_dn = lkl_fuzz_get_devnodes(&dn);
    for(int i=0;  i<n_dn; i++) {
       snprintf(buf, 128, "/dev/fdev_%d", i);
-      res = lkl_sys_mknod(buf, dn->type | 0600, new_encode_dev(MAJOR(dn->devt), MINOR(dn->devt)));
-      fds[n_fd++] = lkl_sys_open(buf, LKL_O_RDWR, 0);
+      lkl_sys_mknod(buf, dn->type | 0600, new_encode_dev(MAJOR(dn->devt), MINOR(dn->devt)));
+      fds[i] = lkl_sys_open(buf, LKL_O_RDWR, 0);
    }
    return n_dn;
 }
@@ -56,7 +54,7 @@ static int read_sth(int n_dn, int *fds) {
 }
 
 int mod_fuzz(const uint8_t *data, size_t size) {
-  int err = 0, ret = 0;
+  int err = 0;
   int fds[LKL_FUZZ_MAX_DEVT];
   int n_dn;
 
@@ -78,7 +76,7 @@ int mod_fuzz(const uint8_t *data, size_t size) {
 
 out_noinit:
   end_fuzz();
-  return ret;
+  return 0;
 }
 
 
