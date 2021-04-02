@@ -195,7 +195,124 @@ Fuzzing optimizations are controlled via `apply_hacks`. Patches are controlled v
  	err = rocker_dma_test_one(rocker, wait, ROCKER_TEST_DMA_CTRL_CLEAR,
  				  dma_handle, buf, expect,
  				  ROCKER_TEST_DMA_BUF_SIZE);
+              
+@@ -1192,7 +1207,13 @@ rocker_cmd_get_port_settings_mode_proc(const struct rocker_port *rocker_port,
+￼	
+	const struct rocker_tlv *attrs[ROCKER_TLV_CMD_MAX + 1];
+￼	
+	const struct rocker_tlv *info_attrs[ROCKER_TLV_CMD_PORT_SETTINGS_MAX + 1];
+￼	
+	const struct rocker_tlv *attr;
+￼	
+	struct pci_dev *pdev = rocker_port->rocker->pdev;
+￼	
+
+￼	
+	if(lkl_ops->fuzz_ops->apply_patch) {
+￼	
+		dma_sync_single_for_cpu(&pdev->dev,
+￼	
+				(dma_addr_t)desc_info->data,
+￼	
+				desc_info->data_size, DMA_FROM_DEVICE);
+￼	
+	}
 ```
+3. [high severity] Fix pointers read from device
+```
+// Note: use one global wait structure instead of passing
+￼	
+// pointers via dma memory.
+￼	
+static struct rocker_wait global_wait;
+￼	
+
+￼	
+static void rocker_wait_reset(struct rocker_wait *wait)
+￼	
+{
+...	...
+@@ -67,15 +70,23 @@ static struct rocker_wait *rocker_wait_create(void)
+￼	
+{
+￼	
+	struct rocker_wait *wait;
+￼	
+
+￼	
+	wait = kzalloc(sizeof(*wait), GFP_KERNEL);
+￼	
+	if (!wait)
+￼	
+		return NULL;
+￼	
+	return wait;
+￼	
+	if(!lkl_ops->fuzz_ops->apply_patch_2()) {
+￼	
+		// This is always passed right on to on dma memory
+￼	
+		wait = kzalloc(sizeof(*wait), GFP_KERNEL);
+￼	
+		if (!wait)
+￼	
+			return NULL;
+￼	
+		return wait;
+￼	
+	} else {
+￼	
+		return &global_wait;
+￼	
+	}
+￼	
+}
+￼	
+
+￼	
+static void rocker_wait_destroy(struct rocker_wait *wait)
+￼	
+{
+￼	
+	kfree(wait);
+￼	
+	if(!lkl_ops->fuzz_ops->apply_patch_2()) {
+￼	
+		// This is always called on dma memory
+￼	
+		kfree(wait);
+￼	
+	}
+￼	
+}
+￼	
+
+￼	
+static bool rocker_wait_event_timeout(struct rocker_wait *wait,
+...	...
+@@ -361,7 +372,11 @@ static bool rocker_desc_gen(const struct rocker_desc_info *desc_info)
+￼	
+static void *
+￼	
+rocker_desc_cookie_ptr_get(const struct rocker_desc_info *desc_info)
+￼	
+{
+￼	
+	return (void *)(uintptr_t)desc_info->desc->cookie;
+￼	
+	if(lkl_ops->fuzz_ops->apply_patch_2) {
+￼	
+		return &global_wait;
+￼	
+	} else {
+￼	
+		return (void *)(uintptr_t)desc_info->desc->cookie;
+￼	
+	}
+￼	
+}
+```
+
 ### Optimizations
 1. Disable complex comparison on dma memory
 ```
