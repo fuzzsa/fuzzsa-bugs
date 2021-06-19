@@ -13,6 +13,10 @@ The driver stores `skb` pointers in shared structures with the device.
 
 Fixed in mainline.
 
+## 2. Device-shared pointer (RO)
+Kmalloced pointers to struct net_device and struct pci_dev are exposed to the device
+https://elixir.bootlin.com/linux/v5.10.9/source/drivers/net/vmxnet3/vmxnet3_drv.c#L3448
+
 # Unreported bugs
 ## 1. out of bounds access
 
