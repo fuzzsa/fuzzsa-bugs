@@ -8,12 +8,16 @@ The common virtio driver code would call dma_unmap_page with a device-controlled
 
 Fix: keep track of actual length of the mapped buffer and avoid overflow.
 
+Reference: https://lore.kernel.org/patchwork/patch/1364048/
+
 ## 2. Out-of-bounds access
 
 A local index variable `i` would be set with the value of `desc[i].next` which is device-controlled, as shown in https://github.com/torvalds/linux/blob/eccc876724927ff3b9ff91f36f7b6b159e948f0c/drivers/virtio/virtio_ring.c#L491.
 This can lead to a buffer overflow into the private memory of the VM.
 
 Fix: check that `i` is not greater than the number of descriptors.
+
+Reference: https://lore.kernel.org/patchwork/patch/1416241/
 
 ## 3. Double free / memory leak
 
@@ -22,12 +26,16 @@ However, memory pointed by `driver_event_dma_addr` and `device_event_dma_addr` n
 
 Fix: use the correct dma addresses.
 
+Reference: https://lkml.org/lkml/2020/12/28/687
+
 ## 4. Use after free
 
 The virtqueue is added to a list in https://github.com/torvalds/linux/blob/eccc876724927ff3b9ff91f36f7b6b159e948f0c/drivers/virtio/virtio_ring.c#L1611, and if the initialization fails the `vq` object would be freed in https://github.com/torvalds/linux/blob/eccc876724927ff3b9ff91f36f7b6b159e948f0c/drivers/virtio/virtio_ring.c#L1677. However, the virtqueue is not removed from the list.
 When all vqs are deleted later in https://github.com/torvalds/linux/blob/eccc876724927ff3b9ff91f36f7b6b159e948f0c/drivers/virtio/virtio_mmio.c#L342, there would be an invalid memory access due to UAF.
 
 Fix: remove the virtqueue from the list if virtqueue initialization fails.
+
+Reference: https://lkml.org/lkml/2020/12/28/828
 
 ## 5. Reachable Assertion
 A `BUG` statement is triggered if the device provides `vq->vq.num_free != vq->split.vring.num`
