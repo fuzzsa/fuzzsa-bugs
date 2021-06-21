@@ -21,6 +21,8 @@ The driver setup would fail an on teardown the function `gve_free_notify_blocks`
 Fix:
 Refactor the code to move the `msix_vectors` allocation in `gve_setup_device_resources`. Also, free it there in the teardown code.
 
+Reference: https://github.com/torvalds/linux/commit/5218e919c8d06279884aa0baf76778a6817d5b93
+
 ## 3. Out of bounds access
 
 Happens in https://github.com/torvalds/linux/blob/d76913908102044f14381df865bb74df17a538cb/drivers/net/ethernet/google/gve/gve_main.c#L243
@@ -36,6 +38,8 @@ The two invocations of `gve_alloc_notify_blocks` are triggered via the paths:
 `gve_probe` -> `gve_init_priv` -> `gve_alloc_notify_blocks`
 `gve_service_task` -> `gve_handle_reset` -> `gve_reset` -> `gve_reset_recovery` -> `gve_init_priv` -> `gve_alloc_notify_blocks`
 Note that `gve_reset_recovery` on patch b) sets the parameter `skip_describe_device` which skips the update of `priv->mgmt_msix_idx` that happens on path a).
+
+Reference: https://github.com/torvalds/linux/commit/e96b491a0ffa35a8a9607c193fa4d894ca9fb32f
 
 ## 4. Device-shared pointer
 
