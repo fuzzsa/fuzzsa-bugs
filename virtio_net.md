@@ -13,5 +13,7 @@ However, initialization would succeed because `err` is earlier set to 0.
 Fix:
 Set `err` to `-EINVAL` and then jump to tear down code.
 
+Reference: https://lkml.org/lkml/2020/12/28/1647
+
 ## 2. Reachable Assertion
 https://elixir.bootlin.com/linux/latest/source/drivers/net/virtio_net.c#L1665
