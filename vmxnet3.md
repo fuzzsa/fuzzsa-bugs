@@ -22,7 +22,6 @@ https://elixir.bootlin.com/linux/v5.10.9/source/drivers/net/vmxnet3/vmxnet3_drv.
 # Unreported bugs
 ## 1. out of bounds access
 
-Found through: static analysis 
 
 Root cause:
 The device controls the value of indTableSize which would lead to an out-of-bounds access in this memory copy: https://elixir.bootlin.com/linux/v5.10.9/source/drivers/net/vmxnet3/vmxnet3_ethtool.c#L1020
@@ -32,15 +31,12 @@ Check that it's not larger than `UPT1_RSS_MAX_IND_TABLE_SIZE`.
 
 ## 2. out of bounds access
 
-Found through: static analysis
-
 Root cause:
 The device controls the value of indTableSize which is to determine the number of iterations in https://elixir.bootlin.com/linux/v5.10.9/source/drivers/net/vmxnet3/vmxnet3_drv.c#L2578.
 While the value is set by the driver few lines above, the device can always change it immediatly after.
 
 ## 3. out of bounds access
 
-Found through: static analysis
 
 Fault in https://elixir.bootlin.com/linux/v5.10.9/source/drivers/net/vmxnet3/vmxnet3_drv.c#L336 and later
 
